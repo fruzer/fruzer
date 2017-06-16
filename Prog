@@ -1,0 +1,1491 @@
+for(int i=0;i<9;i++)
+        {
+            layerFiles[i] = new File(l+(i+1)+".nodes");
+            if(!layerFiles[i].exists())
+            {
+                try{
+                    layerFiles[i].createNewFile();
+                }
+                catch(Exception e)
+                {
+                    System.out.println(e);
+                }
+            }
+        }
+        //loadMind();
+        makeNewMind();evaluate();saveMind();
+        begin.subNodes="100000000,010000000,001000000,000100000,000010000,000001000,000000100,000000010,000000001,";
+        begin.extractNodes();  
+        public void playNext1(){
+        ArrayList<Node> temp = new ArrayList<Node>();
+        //System.out.println(id+" : "+sub_nodes.size());
+        long max = sub_nodes.get(0).pref;
+            for(int i=0;i<sub_nodes.size();i++)
+            {
+                if(sub_nodes.get(i).pref > max)
+                {
+                    temp.clear();
+                    temp.add(sub_nodes.get(i));
+                    max = sub_nodes.get(i).pref;
+                }
+                else if(sub_nodes.get(i).pref == max)
+                {
+                    temp.add(sub_nodes.get(i));
+                }
+            }
+        
+        int choice = (int) (Math.random()*temp.size());
+        temp.get(choice).n++;
+        temp.get(choice).setAsState();
+    }
+    
+    public void playNext2(){
+        ArrayList<Node> temp = new ArrayList<Node>();
+        //System.out.println(id+" : "+sub_nodes.size());
+        long min = sub_nodes.get(0).pref;
+            for(int i=0;i<sub_nodes.size();i++)
+            {
+                if(sub_nodes.get(i).pref < min)
+                {
+                    temp.clear();
+                    temp.add(sub_nodes.get(i));
+                    min = sub_nodes.get(i).pref;
+                }
+                else if(sub_nodes.get(i).pref == min)
+                {
+                    temp.add(sub_nodes.get(i));
+                }
+            }
+        
+        int choice = (int) (Math.random()*temp.size());
+        temp.get(choice).n++;
+        temp.get(choice).setAsState();
+    }
+    
+    public void playNextn(){
+        ArrayList<Node> temp = new ArrayList<Node>();
+        //System.out.println(id+" : "+sub_nodes.size());
+        int choice = 0;
+        long min = sub_nodes.get(0).n;
+            for(int i=0;i<sub_nodes.size();i++)
+            {
+                if(sub_nodes.get(i).n < min)
+                {Hide   Shrink    Copy Code
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
+public class TicTacToe extends javax.swing.JFrame {
+    static int winComb[][] = {{1,2,3},{4,5,6},{7,8,9},{1,4,7},{2,5,8},{3,6,9},{1,5,9},{3,5,7}};
+    public static int[][] state = {{0,0,0},{0,0,0},{0,0,0}};
+    Player pl1 = new Human();
+    Player pl2 = new Computer("mind\\layer");
+    public static int butClicked = 0;
+    int w1=0 , w2 = 0 , dr = 0;
+    public TicTacToe() {
+        initComponents();
+    }
+    
+    public void start(){
+        if(w1==500)System.exit(0);
+        int current = 1 , turn = 1;
+        int w=0;
+        while((w=checkWin(turn,state))==0)
+        {
+            if(current == 1)
+            {
+                pl1.playTurn(1,turn);
+                refreshGrid();
+                current = 2;
+            }
+            else if(current == 2 )
+            {
+                pl2.playTurn(2,turn);
+                refreshGrid();
+                current = 1;
+            }
+            turn++;
+            try {Thread.sleep(0);} catch (InterruptedException ex) {Logger.getLogger(TicTacToe.class.getName()).log(Level.SEVERE, null, ex);}
+        }
+        if(w==1)
+        {
+            pl1.notifyWin(1);
+            pl2.notifyLose(2);
+            print("Player 1 Won The Game !");
+            w1++;
+        }
+        else if(w==2)
+        {
+            pl2.notifyWin(1);
+            pl1.notifyLose(2);
+            print("Player 2 Won The Game !");
+            w2++;
+        }
+        else if(w==-1)
+        {
+            print("Game DRAW !");
+            dr++;
+        }
+        try {Thread.sleep(0);} catch (InterruptedException ex) {Logger.getLogger(TicTacToe.class.getName()).log(Level.SEVERE, null, ex);}
+    }
+    
+    public void refreshGrid(){
+        b11.setText(state[0][0]==1?"X":(state[0][0]==2?"O":""));
+        b12.setText(state[0][1]==1?"X":(state[0][1]==2?"O":""));
+        b13.setText(state[0][2]==1?"X":(state[0][2]==2?"O":""));
+        b21.setText(state[1][0]==1?"X":(state[1][0]==2?"O":""));
+        b22.setText(state[1][1]==1?"X":(state[1][1]==2?"O":""));
+        b23.setText(state[1][2]==1?"X":(state[1][2]==2?"O":""));
+        b31.setText(state[2][0]==1?"X":(state[2][0]==2?"O":""));
+        b32.setText(state[2][1]==1?"X":(state[2][1]==2?"O":""));
+        b33.setText(state[2][2]==1?"X":(state[2][2]==2?"O":""));
+        jLabel1.setText(" X wins : "+w1);
+        jLabel2.setText(" O wins : "+w2);
+        jLabel3.setText(" Draws  : "+dr);
+    }
+    
+    public static int checkWin(int turn,int[][] st){
+        int ret = 0;
+        String x ="";
+        String o ="";
+        int i=0 , j=0 , c=0 , p , q;
+        for(p=0;p<3;p++)
+        {
+            for(q=0;q<3;q++)
+            {
+                c++;
+                if(st[p][q]==1)
+                {
+                    x+=c;
+                }
+                else if(st[p][q]==2)
+                {
+                    o+=c;
+                }
+            }
+        }
+        //print(x+" : "+o);
+        ret = checkWin2(x,o);
+        
+        if(turn==10 && ret==0)
+        {
+            ret = -1;
+        }
+        return ret;
+    }
+    public static int checkWin2(String x,String o){
+        int ret = 0;
+        int p;
+        for(p=0;p<8;p++)
+        {
+            
+            if(x.indexOf((char)winComb[p][0]+'0')>-1 && x.indexOf((char)winComb[p][1]+'0')>-1 && x.indexOf((char)winComb[p][2]+'0')>-1)
+            {
+                ret = 1;
+                break;
+            }
+            if(o.indexOf((char)winComb[p][0]+'0')>-1 && o.indexOf((char)winComb[p][1]+'0')>-1 && o.indexOf((char)winComb[p][2]+'0')>-1)
+            {
+                ret = 2;
+                break;
+            }
+        }
+        
+        return ret;
+    }
+    public void print(String s){
+        Notification.setText("\t"+s);
+    }
+    
+    public void gameInit(){
+        state[0][0] = 0;
+        state[0][1] = 0;
+        state[0][2] = 0;
+        state[1][0] = 0;
+        state[1][1] = 0;
+        state[1][2] = 0;
+        state[2][0] = 0;
+        state[2][1] = 0;
+        state[2][2] = 0;
+        refreshGrid();
+    }
+    
+    
+    
+    
+    
+    
+    
+    @SuppressWarnings("unchecked")
+    // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
+    private void initComponents() {
+
+        try {
+            jPanel1 =(javax.swing.JPanel)java.beans.Beans.instantiate(getClass().getClassLoader(), "TicTacToe_jPanel1");
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        } catch (java.io.IOException e) {
+            e.printStackTrace();
+        }
+        b21 = new javax.swing.JButton();
+        b11 = new javax.swing.JButton();
+        b22 = new javax.swing.JButton();
+        b12 = new javax.swing.JButton();
+        b13 = new javax.swing.JButton();
+        b23 = new javax.swing.JButton();
+        b31 = new javax.swing.JButton();
+        b32 = new javax.swing.JButton();
+        b33 = new javax.swing.JButton();
+        Notification = new javax.swing.JLabel();
+        jPanel2 = new javax.swing.JPanel();
+        jLabel1 = new javax.swing.JLabel();
+        jLabel2 = new javax.swing.JLabel();
+        jLabel3 = new javax.swing.JLabel();
+        jLabel4 = new javax.swing.JLabel();
+        jLabel5 = new javax.swing.JLabel();
+        jLabel6 = new javax.swing.JLabel();
+
+        setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setAlwaysOnTop(true);
+        setPreferredSize(new java.awt.Dimension(600, 400));
+
+        b21.setBackground(new java.awt.Color(255, 255, 255));
+        b21.setFont(new java.awt.Font("Arial", 1, 48)); // NOI18N
+        b21.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        b21.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                b21ActionPerformed(evt);
+            }
+        });
+
+        b11.setBackground(new java.awt.Color(255, 255, 255));
+        b11.setFont(new java.awt.Font("Arial", 1, 48)); // NOI18N
+        b11.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        b11.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                b11ActionPerformed(evt);
+            }
+        });
+
+        b22.setBackground(new java.awt.Color(255, 255, 255));
+        b22.setFont(new java.awt.Font("Arial", 1, 48)); // NOI18N
+        b22.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        b22.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                b22ActionPerformed(evt);
+            }
+        });
+
+        b12.setBackground(new java.awt.Color(255, 255, 255));
+        b12.setFont(new java.awt.Font("Arial", 1, 48)); // NOI18N
+        b12.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        b12.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                b12ActionPerformed(evt);
+            }
+        });
+
+        b13.setBackground(new java.awt.Color(255, 255, 255));
+        b13.setFont(new java.awt.Font("Arial", 1, 48)); // NOI18N
+        b13.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        b13.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                b13ActionPerformed(evt);
+            }
+        });
+
+        b23.setBackground(new java.awt.Color(255, 255, 255));
+        b23.setFont(new java.awt.Font("Arial", 1, 48)); // NOI18N
+        b23.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        b23.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                b23ActionPerformed(evt);
+            }
+        });
+
+        b31.setBackground(new java.awt.Color(255, 255, 255));
+        b31.setFont(new java.awt.Font("Arial", 1, 48)); // NOI18N
+        b31.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        b31.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                b31ActionPerformed(evt);
+            }
+        });
+
+        b32.setBackground(new java.awt.Color(255, 255, 255));
+        b32.setFont(new java.awt.Font("Arial", 1, 48)); // NOI18N
+        b32.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        b32.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                b32ActionPerformed(evt);
+            }
+        });
+
+        b33.setBackground(new java.awt.Color(255, 255, 255));
+        b33.setFont(new java.awt.Font("Arial", 1, 48)); // NOI18N
+        b33.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        b33.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                b33ActionPerformed(evt);
+            }
+        });
+
+        Notification.setBackground(new java.awt.Color(255, 255, 0));
+        Notification.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
+        Notification.setForeground(new java.awt.Color(0, 0, 102));
+        Notification.setText("Tic - Tac - Toe");
+        Notification.setBorder(new javax.swing.border.MatteBorder(null));
+
+        jLabel1.setFont(new java.awt.Font("Arial", 0, 18)); // NOI18N
+        jLabel1.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
+
+        jLabel2.setFont(new java.awt.Font("Arial", 0, 18)); // NOI18N
+        jLabel2.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
+
+        jLabel3.setFont(new java.awt.Font("Arial", 0, 18)); // NOI18N
+        jLabel3.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
+
+        jLabel4.setFont(new java.awt.Font("Arial", 0, 18)); // NOI18N
+        jLabel4.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
+
+        jLabel5.setFont(new java.awt.Font("Arial", 0, 18)); // NOI18N
+        jLabel5.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
+
+        jLabel6.setFont(new java.awt.Font("Arial", 0, 18)); // NOI18N
+        jLabel6.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
+
+        javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
+        jPanel2.setLayout(jPanel2Layout);
+        jPanel2Layout.setHorizontalGroup(
+            jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel2Layout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jLabel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(jLabel2, javax.swing.GroupLayout.DEFAULT_SIZE, 203, Short.MAX_VALUE)
+                    .addComponent(jLabel3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(jLabel4, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(jLabel5, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(jLabel6, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addContainerGap())
+        );
+        jPanel2Layout.setVerticalGroup(
+            jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel2Layout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jLabel3, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jLabel4, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jLabel5, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jLabel6, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+        );
+
+        jLabel1.getAccessibleContext().setAccessibleName("l1");
+        jLabel1.getAccessibleContext().setAccessibleDescription("");
+
+        javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
+        jPanel1.setLayout(jPanel1Layout);
+        jPanel1Layout.setHorizontalGroup(
+            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel1Layout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(Notification, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(jPanel1Layout.createSequentialGroup()
+                                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addComponent(b21, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addComponent(b11, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addGroup(jPanel1Layout.createSequentialGroup()
+                                        .addComponent(b22, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                        .addComponent(b23, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                    .addGroup(jPanel1Layout.createSequentialGroup()
+                                        .addComponent(b12, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                        .addComponent(b13, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE))))
+                            .addGroup(jPanel1Layout.createSequentialGroup()
+                                .addComponent(b31, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(b32, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(b33, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
+                .addContainerGap())
+        );
+        jPanel1Layout.setVerticalGroup(
+            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel1Layout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(b12, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(b13, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(b11, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(b22, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(b21, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(b23, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(b32, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(b31, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(b33, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                    .addComponent(jPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(Notification, javax.swing.GroupLayout.DEFAULT_SIZE, 40, Short.MAX_VALUE)
+                .addContainerGap())
+        );
+
+        javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
+        getContentPane().setLayout(layout);
+        layout.setHorizontalGroup(
+            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(layout.createSequentialGroup()
+                .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, 561, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(0, 0, Short.MAX_VALUE))
+        );
+        layout.setVerticalGroup(
+            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, 385, Short.MAX_VALUE)
+        );
+
+        pack();
+    }// </editor-fold>//GEN-END:initComponents
+
+    private void b33ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_b33ActionPerformed
+        if(state[2][2]==0)
+        butClicked = 9;
+    }//GEN-LAST:event_b33ActionPerformed
+
+    private void b32ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_b32ActionPerformed
+        if(state[2][1]==0)
+        butClicked = 8;
+    }//GEN-LAST:event_b32ActionPerformed
+
+    private void b31ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_b31ActionPerformed
+        if(state[2][0]==0)
+        butClicked = 7;
+    }//GEN-LAST:event_b31ActionPerformed
+
+    private void b23ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_b23ActionPerformed
+        if(state[1][2]==0)
+        butClicked = 6;
+    }//GEN-LAST:event_b23ActionPerformed
+
+    private void b13ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_b13ActionPerformed
+        if(state[0][2]==0)
+        butClicked = 3;
+    }//GEN-LAST:event_b13ActionPerformed
+
+    private void b12ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_b12ActionPerformed
+        if(state[0][1]==0)
+        butClicked = 2;
+    }//GEN-LAST:event_b12ActionPerformed
+
+    private void b22ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_b22ActionPerformed
+        if(state[1][1]==0)
+        butClicked = 5;
+    }//GEN-LAST:event_b22ActionPerformed
+
+    private void b11ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_b11ActionPerformed
+        if(state[0][0]==0)
+        butClicked = 1;
+    }//GEN-LAST:event_b11ActionPerformed
+
+    private void b21ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_b21ActionPerformed
+        if(state[1][0]==0)
+        butClicked = 4;
+    }//GEN-LAST:event_b21ActionPerformed
+
+    public static void main(String args[]) {
+        /* Set the Nimbus look and feel */
+        //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
+        /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
+         * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html 
+         */
+        try {
+            for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
+                if ("Nimbus".equals(info.getName())) {
+                    javax.swing.UIManager.setLookAndFeel(info.getClassName());
+                    break;
+                }
+            }
+        } catch (ClassNotFoundException ex) {
+            java.util.logging.Logger.getLogger(TicTacToe.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+        } catch (InstantiationException ex) {
+            java.util.logging.Logger.getLogger(TicTacToe.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+        } catch (IllegalAccessException ex) {
+            java.util.logging.Logger.getLogger(TicTacToe.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+        } catch (javax.swing.UnsupportedLookAndFeelException ex) {
+            java.util.logging.Logger.getLogger(TicTacToe.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+        }
+        //</editor-fold>
+                    TicTacToe t = new TicTacToe();
+                    t.setVisible(true);
+                    while(true)
+                    {
+                        t.start();
+                        t.gameInit();
+                    }
+    }
+    
+    // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JLabel Notification;
+    public static javax.swing.JButton b11;
+    public static javax.swing.JButton b12;
+    public static javax.swing.JButton b13;
+    public static javax.swing.JButton b21;
+    public static javax.swing.JButton b22;
+    public static javax.swing.JButton b23;
+    public static javax.swing.JButton b31;
+    public static javax.swing.JButton b32;
+    public static javax.swing.JButton b33;
+    private javax.swing.JLabel jLabel1;
+    private javax.swing.JLabel jLabel2;
+    private javax.swing.JLabel jLabel3;
+    private javax.swing.JLabel jLabel4;
+    private javax.swing.JLabel jLabel5;
+    private javax.swing.JLabel jLabel6;
+    private javax.swing.JPanel jPanel1;
+    private javax.swing.JPanel jPanel2;
+    // End of variables declaration//GEN-END:variables
+    
+} 
+                    min = sub_nodes.get(i).n;
+                    choice = i;
+                }
+            }
+        
+        sub_nodes.get(choice).n++;
+        sub_nodes.get(choice).setAsState();
+    } Hide   Shrink    Copy Code
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
+public class TicTacToe extends javax.swing.JFrame {
+    static int winComb[][] = {{1,2,3},{4,5,6},{7,8,9},{1,4,7},{2,5,8},{3,6,9},{1,5,9},{3,5,7}};
+    public static int[][] state = {{0,0,0},{0,0,0},{0,0,0}};
+    Player pl1 = new Human();
+    Player pl2 = new Computer("mind\\layer");
+    public static int butClicked = 0;
+    int w1=0 , w2 = 0 , dr = 0;
+    public TicTacToe() {
+        initComponents();
+    }
+    
+    public void start(){
+        if(w1==500)System.exit(0);
+        int current = 1 , turn = 1;
+        int w=0;
+        while((w=checkWin(turn,state))==0)
+        {
+            if(current == 1)
+            {
+                pl1.playTurn(1,turn);
+                refreshGrid();
+                current = 2;
+            }
+            else if(current == 2 )
+            {
+                pl2.playTurn(2,turn);
+                refreshGrid();
+                current = 1;
+            }
+            turn++;
+            try {Thread.sleep(0);} catch (InterruptedException ex) {Logger.getLogger(TicTacToe.class.getName()).log(Level.SEVERE, null, ex);}
+        }
+        if(w==1)
+        {
+            pl1.notifyWin(1);
+            pl2.notifyLose(2);
+            print("Player 1 Won The Game !");
+            w1++;
+        }
+        else if(w==2)
+        {
+            pl2.notifyWin(1);
+            pl1.notifyLose(2);
+            print("Player 2 Won The Game !");
+            w2++;
+        }
+        else if(w==-1)
+        {
+            print("Game DRAW !");
+            dr++;
+        }
+        try {Thread.sleep(0);} catch (InterruptedException ex) {Logger.getLogger(TicTacToe.class.getName()).log(Level.SEVERE, null, ex);}
+    }
+    
+    public void refreshGrid(){
+        b11.setText(state[0][0]==1?"X":(state[0][0]==2?"O":""));
+        b12.setText(state[0][1]==1?"X":(state[0][1]==2?"O":""));
+        b13.setText(state[0][2]==1?"X":(state[0][2]==2?"O":""));
+        b21.setText(state[1][0]==1?"X":(state[1][0]==2?"O":""));
+        b22.setText(state[1][1]==1?"X":(state[1][1]==2?"O":""));
+        b23.setText(state[1][2]==1?"X":(state[1][2]==2?"O":""));
+        b31.setText(state[2][0]==1?"X":(state[2][0]==2?"O":""));
+        b32.setText(state[2][1]==1?"X":(state[2][1]==2?"O":""));
+        b33.setText(state[2][2]==1?"X":(state[2][2]==2?"O":""));
+        jLabel1.setText(" X wins : "+w1);
+        jLabel2.setText(" O wins : "+w2);
+        jLabel3.setText(" Draws  : "+dr);
+    }
+    
+    public static int checkWin(int turn,int[][] st){
+        int ret = 0;
+        String x ="";
+        String o ="";
+        int i=0 , j=0 , c=0 , p , q;
+        for(p=0;p<3;p++)
+        {
+            for(q=0;q<3;q++)
+            {
+                c++;
+                if(st[p][q]==1)
+                {
+                    x+=c;
+                }
+                else if(st[p][q]==2)
+                {
+                    o+=c;
+                }
+            }
+        }
+        //print(x+" : "+o);
+        ret = checkWin2(x,o);
+        
+        if(turn==10 && ret==0)
+        {
+            ret = -1;
+        }
+        return ret;
+    }
+    public static int checkWin2(String x,String o){
+        int ret = 0;
+        int p;
+        for(p=0;p<8;p++)
+        {
+            
+            if(x.indexOf((char)winComb[p][0]+'0')>-1 && x.indexOf((char)winComb[p][1]+'0')>-1 && x.indexOf((char)winComb[p][2]+'0')>-1)
+            {
+                ret = 1;
+                break;
+            }
+            if(o.indexOf((char)winComb[p][0]+'0')>-1 && o.indexOf((char)winComb[p][1]+'0')>-1 && o.indexOf((char)winComb[p][2]+'0')>-1)
+            {
+                ret = 2;
+                break;
+            }
+        }
+        
+        return ret;
+    }
+    public void print(String s){
+        Notification.setText("\t"+s);
+    }
+    
+    public void gameInit(){
+        state[0][0] = 0;
+        state[0][1] = 0;
+        state[0][2] = 0;
+        state[1][0] = 0;
+        state[1][1] = 0;
+        state[1][2] = 0;
+        state[2][0] = 0;
+        state[2][1] = 0;
+        state[2][2] = 0;
+        refreshGrid();
+    }
+    
+    
+    
+    
+    
+    
+    
+    @SuppressWarnings("unchecked")
+    // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
+    private void initComponents() {
+
+        try {
+            jPanel1 =(javax.swing.JPanel)java.beans.Beans.instantiate(getClass().getClassLoader(), "TicTacToe_jPanel1");
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        } catch (java.io.IOException e) {
+            e.printStackTrace();
+        }
+        b21 = new javax.swing.JButton();
+        b11 = new javax.swing.JButton();
+        b22 = new javax.swing.JButton();
+        b12 = new javax.swing.JButton();
+        b13 = new javax.swing.JButton();
+        b23 = new javax.swing.JButton();
+        b31 = new javax.swing.JButton();
+        b32 = new javax.swing.JButton();
+        b33 = new javax.swing.JButton();
+        Notification = new javax.swing.JLabel();
+        jPanel2 = new javax.swing.JPanel();
+        jLabel1 = new javax.swing.JLabel();
+        jLabel2 = new javax.swing.JLabel();
+        jLabel3 = new javax.swing.JLabel();
+        jLabel4 = new javax.swing.JLabel();
+        jLabel5 = new javax.swing.JLabel();
+        jLabel6 = new javax.swing.JLabel();
+
+        setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setAlwaysOnTop(true);
+        setPreferredSize(new java.awt.Dimension(600, 400));
+
+        b21.setBackground(new java.awt.Color(255, 255, 255));
+        b21.setFont(new java.awt.Font("Arial", 1, 48)); // NOI18N
+        b21.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        b21.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                b21ActionPerformed(evt);
+            }
+        });
+
+        b11.setBackground(new java.awt.Color(255, 255, 255));
+        b11.setFont(new java.awt.Font("Arial", 1, 48)); // NOI18N
+        b11.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        b11.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                b11ActionPerformed(evt);
+            }
+        });
+
+        b22.setBackground(new java.awt.Color(255, 255, 255));
+        b22.setFont(new java.awt.Font("Arial", 1, 48)); // NOI18N
+        b22.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        b22.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                b22ActionPerformed(evt);
+            }
+        });
+
+        b12.setBackground(new java.awt.Color(255, 255, 255));
+        b12.setFont(new java.awt.Font("Arial", 1, 48)); // NOI18N
+        b12.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        b12.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                b12ActionPerformed(evt);
+            }
+        });
+
+        b13.setBackground(new java.awt.Color(255, 255, 255));
+        b13.setFont(new java.awt.Font("Arial", 1, 48)); // NOI18N
+        b13.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        b13.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                b13ActionPerformed(evt);
+            }
+        });
+
+        b23.setBackground(new java.awt.Color(255, 255, 255));
+        b23.setFont(new java.awt.Font("Arial", 1, 48)); // NOI18N
+        b23.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        b23.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                b23ActionPerformed(evt);
+            }
+        });
+
+        b31.setBackground(new java.awt.Color(255, 255, 255));
+        b31.setFont(new java.awt.Font("Arial", 1, 48)); // NOI18N
+        b31.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        b31.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                b31ActionPerformed(evt);
+            }
+        });
+
+        b32.setBackground(new java.awt.Color(255, 255, 255));
+        b32.setFont(new java.awt.Font("Arial", 1, 48)); // NOI18N
+        b32.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        b32.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                b32ActionPerformed(evt);
+            }
+        });
+
+        b33.setBackground(new java.awt.Color(255, 255, 255));
+        b33.setFont(new java.awt.Font("Arial", 1, 48)); // NOI18N
+        b33.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        b33.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                b33ActionPerformed(evt);
+            }
+        });
+
+        Notification.setBackground(new java.awt.Color(255, 255, 0));
+        Notification.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
+        Notification.setForeground(new java.awt.Color(0, 0, 102));
+        Notification.setText("Tic - Tac - Toe");
+        Notification.setBorder(new javax.swing.border.MatteBorder(null));
+
+        jLabel1.setFont(new java.awt.Font("Arial", 0, 18)); // NOI18N
+        jLabel1.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
+
+        jLabel2.setFont(new java.awt.Font("Arial", 0, 18)); // NOI18N
+        jLabel2.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
+
+        jLabel3.setFont(new java.awt.Font("Arial", 0, 18)); // NOI18N
+        jLabel3.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
+
+        jLabel4.setFont(new java.awt.Font("Arial", 0, 18)); // NOI18N
+        jLabel4.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
+
+        jLabel5.setFont(new java.awt.Font("Arial", 0, 18)); // NOI18N
+        jLabel5.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
+
+        jLabel6.setFont(new java.awt.Font("Arial", 0, 18)); // NOI18N
+        jLabel6.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
+
+        javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
+        jPanel2.setLayout(jPanel2Layout);
+        jPanel2Layout.setHorizontalGroup(
+            jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel2Layout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jLabel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(jLabel2, javax.swing.GroupLayout.DEFAULT_SIZE, 203, Short.MAX_VALUE)
+                    .addComponent(jLabel3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(jLabel4, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(jLabel5, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(jLabel6, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addContainerGap())
+        );
+        jPanel2Layout.setVerticalGroup(
+            jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel2Layout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jLabel3, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jLabel4, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jLabel5, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jLabel6, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+        );
+
+        jLabel1.getAccessibleContext().setAccessibleName("l1");
+        jLabel1.getAccessibleContext().setAccessibleDescription("");
+
+        javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
+        jPanel1.setLayout(jPanel1Layout);
+        jPanel1Layout.setHorizontalGroup(
+            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel1Layout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(Notification, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(jPanel1Layout.createSequentialGroup()
+                                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addComponent(b21, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addComponent(b11, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addGroup(jPanel1Layout.createSequentialGroup()
+                                        .addComponent(b22, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                        .addComponent(b23, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                    .addGroup(jPanel1Layout.createSequentialGroup()
+                                        .addComponent(b12, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                        .addComponent(b13, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE))))
+                            .addGroup(jPanel1Layout.createSequentialGroup()
+                                .addComponent(b31, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(b32, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(b33, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
+                .addContainerGap())
+        );
+        jPanel1Layout.setVerticalGroup(
+            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel1Layout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(b12, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(b13, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(b11, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(b22, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(b21, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(b23, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(b32, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(b31, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(b33, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                    .addComponent(jPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(Notification, javax.swing.GroupLayout.DEFAULT_SIZE, 40, Short.MAX_VALUE)
+                .addContainerGap())
+        );
+
+        javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
+        getContentPane().setLayout(layout);
+        layout.setHorizontalGroup(
+            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(layout.createSequentialGroup()
+                .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, 561, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(0, 0, Short.MAX_VALUE))
+        );
+        layout.setVerticalGroup(
+            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, 385, Short.MAX_VALUE)
+        );
+
+        pack();
+    }// </editor-fold>//GEN-END:initComponents
+
+    private void b33ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_b33ActionPerformed
+        if(state[2][2]==0)
+        butClicked = 9;
+    }//GEN-LAST:event_b33ActionPerformed
+
+    private void b32ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_b32ActionPerformed
+        if(state[2][1]==0)
+        butClicked = 8;
+    }//GEN-LAST:event_b32ActionPerformed
+
+    private void b31ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_b31ActionPerformed
+        if(state[2][0]==0)
+        butClicked = 7;
+    }//GEN-LAST:event_b31ActionPerformed
+
+    private void b23ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_b23ActionPerformed
+        if(state[1][2]==0)
+        butClicked = 6;
+    }//GEN-LAST:event_b23ActionPerformed
+
+    private void b13ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_b13ActionPerformed
+        if(state[0][2]==0)
+        butClicked = 3;
+    }//GEN-LAST:event_b13ActionPerformed
+
+    private void b12ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_b12ActionPerformed
+        if(state[0][1]==0)
+        butClicked = 2;
+    }//GEN-LAST:event_b12ActionPerformed
+
+    private void b22ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_b22ActionPerformed
+        if(state[1][1]==0)
+        butClicked = 5;
+    }//GEN-LAST:event_b22ActionPerformed
+
+    private void b11ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_b11ActionPerformed
+        if(state[0][0]==0)
+        butClicked = 1;
+    }//GEN-LAST:event_b11ActionPerformed
+
+    private void b21ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_b21ActionPerformed
+        if(state[1][0]==0)
+        butClicked = 4;
+    }//GEN-LAST:event_b21ActionPerformed
+
+    public static void main(String args[]) {
+        /* Set the Nimbus look and feel */
+        //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
+        /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
+         * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html 
+         */
+        try {
+            for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
+                if ("Nimbus".equals(info.getName())) {
+                    javax.swing.UIManager.setLookAndFeel(info.getClassName());
+                    break;
+                }
+            }
+        } catch (ClassNotFoundException ex) {
+            java.util.logging.Logger.getLogger(TicTacToe.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+        } catch (InstantiationException ex) {
+            java.util.logging.Logger.getLogger(TicTacToe.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+        } catch (IllegalAccessException ex) {
+            java.util.logging.Logger.getLogger(TicTacToe.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+        } catch (javax.swing.UnsupportedLookAndFeelException ex) {
+            java.util.logging.Logger.getLogger(TicTacToe.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+        }
+        //</editor-fold>
+                    TicTacToe t = new TicTacToe();
+                    t.setVisible(true);
+                    while(true)
+                    {
+                        t.start();
+                        t.gameInit();
+                    }
+    }
+    
+    // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JLabel Notification;
+    public static javax.swing.JButton b11;
+    public static javax.swing.JButton b12;
+    public static javax.swing.JButton b13;
+    public static javax.swing.JButton b21;
+    public static javax.swing.JButton b22;
+    public static javax.swing.JButton b23;
+    public static javax.swing.JButton b31;
+    public static javax.swing.JButton b32;
+    public static javax.swing.JButton b33;
+    private javax.swing.JLabel jLabel1;
+    private javax.swing.JLabel jLabel2;
+    private javax.swing.JLabel jLabel3;
+    private javax.swing.JLabel jLabel4;
+    private javax.swing.JLabel jLabel5;
+    private javax.swing.JLabel jLabel6;
+    private javax.swing.JPanel jPanel1;
+    private javax.swing.JPanel jPanel2;
+    // End of variables declaration//GEN-END:variables
+    public abstract class Player {
+    void playTurn(int pl,int turn){}
+    void playerInit(){}
+    void notifyWin(int pl){}
+    void notifyLose(int pl){}
+    public class Human extends Player {
+    @Override
+    void playTurn(int pl,int turn){
+        while(TicTacToe.butClicked == 0);
+        switch(TicTacToe.butClicked)
+        {
+            case 1 : TicTacToe.state[0][0]=pl;break;
+            case 2 : TicTacToe.state[0][1]=pl;break;
+            case 3 : TicTacToe.state[0][2]=pl;break;
+            case 4 : TicTacToe.state[1][0]=pl;break;
+            case 5 : TicTacToe.state[1][1]=pl;break;
+            case 6 : TicTacToe.state[1][2]=pl;break;
+            case 7 : TicTacToe.state[2][0]=pl;break;
+            case 8 : TicTacToe.state[2][1]=pl;break;
+            case 9 : TicTacToe.state[2][2]=pl;break;
+        }
+        TicTacToe.butClicked = 0;
+    }
+} import java.io.*;
+import java.util.ArrayList;
+
+
+public class Computer extends Player {
+    int t=0;
+    Node begin = new Node("000000000",0,this);
+    Node current = begin;
+    
+        double lr = 0;
+    File[] layerFiles = new File[9];
+    ArrayList<Layer> layers = new ArrayList<Layer>();
+    public Computer(String l){
+        for(int i=0;i<9;i++)
+        {
+            layerFiles[i] = new File(l+(i+1)+".nodes");
+            if(!layerFiles[i].exists())
+            {
+                try{
+                    layerFiles[i].createNewFile();
+                }
+                catch(Exception e)
+                {
+                    System.out.println(e);
+                }
+            }
+        }
+        //loadMind();
+        makeNewMind();evaluate();saveMind();
+        begin.subNodes="100000000,010000000,001000000,000100000,000010000,000001000,000000100,000000010,000000001,";
+        begin.extractNodes();
+    }
+    public void evaluate(){
+        for(int i=0;i<9;i++)
+        {
+            Layer l = layers.get(i);
+            for(int j=0;j<l.nodes.size();j++)
+            {
+                String x="" , o="" , s = l.nodes.get(j).id;
+                for(int k=0;k<9;k++)
+                {
+                    char ch = s.charAt(k);
+                    if(ch=='1')
+                    {
+                        x+=(k+1);
+                    }
+                    else if(ch=='2')
+                    {
+                        o+=(k+1);
+                    }
+                }
+                int r = TicTacToe.checkWin2(x,o);
+                switch(r)
+                {
+                    case 1 : l.nodes.get(j).pref=50;
+                        l.nodes.get(j).nodeType=1;
+                        break;
+                    case 2 : l.nodes.get(j).pref=-50;
+                        l.nodes.get(j).nodeType=1;
+                        break;
+                    case -1 : 
+                        l.nodes.get(j).nodeType=1;
+                        break;
+                }
+            }
+        }
+    }
+    public void loadMind(){
+        FileReader f;
+        BufferedReader r;
+        int i=0;
+        try{
+            for(int l=0;l<9;l++)
+            {
+                layers.add(new Layer(l+1));
+                f = new FileReader(layerFiles[l]);
+                r = new BufferedReader(f);
+                String line;
+                while((line=r.readLine())!=null)
+                {
+                    Node temp = new Node(r.readLine(),l+1,this);
+                    temp.subNodes = r.readLine();
+                    String no = r.readLine();
+                    //System.out.println(no);
+                    temp.pref = Integer.parseInt(no);
+                    temp.n = Integer.parseInt(r.readLine());
+                    temp.nodeType = Integer.parseInt(r.readLine());
+                    layers.get(l).nodes.add(temp);
+                }
+            }
+            
+            for(int l=0;l<9;l++)
+            {
+                for(int j=0;j<layers.get(l).nodes.size();j++)
+                {
+                    layers.get(l).nodes.get(j).extractNodes();
+                }
+            }
+            
+        }
+        catch(Exception e){
+            e.printStackTrace(System.out);
+        }
+    }
+    public void saveMind(){
+        for(int i=7;i>=0;i--)
+        {
+            layers.get(i).refreshLayer();
+        }
+        try{
+            for(int i=0;i<9;i++)
+            {
+                Layer l = layers.get(i);
+                PrintWriter p = new PrintWriter(new BufferedWriter(new FileWriter(layerFiles[i])));
+                for(int j=0;j<l.nodes.size();j++)
+                {
+                    Node temp = l.nodes.get(j);
+                    p.println("***********************************************");
+                    p.println(temp.id);
+                    //System.out.println(temp.id);
+                    String s=""; 
+                    for(int k=0;k<temp.sub_nodes.size();k++)
+                    {
+                        s+=temp.sub_nodes.get(k).id+",";
+                    }
+                    p.println(s);
+                    p.println(temp.pref);
+                    p.println(temp.n);
+                    p.println(temp.nodeType);
+                }
+                p.close();
+                //System.out.println("layer "+i+" : "+l.nodes.size());
+            }
+        }
+        catch(Exception e)
+        {
+            e.printStackTrace(System.out);
+        }
+    }
+    public void makeNewMind(){
+        layers.add(new Layer(1));layers.add(new Layer(2));layers.add(new Layer(3));layers.add(new Layer(4));layers.add(new Layer(5));layers.add(new Layer(6));layers.add(new Layer(7));layers.add(new Layer(8));layers.add(new Layer(9));
+        
+        for(int i1=0;i1<=2;i1++){
+        for(int i2=0;i2<=2;i2++){
+        for(int i3=0;i3<=2;i3++){
+        for(int i4=0;i4<=2;i4++){
+        for(int i5=0;i5<=2;i5++){
+        for(int i6=0;i6<=2;i6++){
+        for(int i7=0;i7<=2;i7++){
+        for(int i8=0;i8<=2;i8++){
+        for(int i9=0;i9<=2;i9++){
+            int l=9;
+            if(i1==0)l--;
+            if(i2==0)l--;
+            if(i3==0)l--;
+            if(i4==0)l--;
+            if(i5==0)l--;
+            if(i6==0)l--;
+            if(i7==0)l--;
+            if(i8==0)l--;
+            if(i9==0)l--;
+            
+            int x=0;
+            if(i1==1)x++;
+            if(i2==1)x++;
+            if(i3==1)x++;
+            if(i4==1)x++;
+            if(i5==1)x++;
+            if(i6==1)x++;
+            if(i7==1)x++;
+            if(i8==1)x++;
+            if(i9==1)x++;
+            
+            int o = l-x;
+            
+            if((x-o==0 || x-o==1) && l!=0 )
+            {
+                String id = ""+i1+i2+i3+i4+i5+i6+i7+i8+i9;
+                layers.get(l-1).nodes.add(new Node(id,l,this));
+            }
+        }}}}}}}}} 
+        for(int l=1;l<9;l++)
+        {
+            for(int j=0;j<layers.get(l).nodes.size();j++)
+            {
+                Node node = layers.get(l).nodes.get(j);
+                for(int i=0;i<9;i++)
+                {
+                    String newId="";
+                    for(int k=0;k<9;k++)
+                    {
+                        char ch = node.id.charAt(k);
+                        if(k==i)ch='0';
+                        newId+=ch;
+                    }
+                    if(!newId.equals(node.id))
+                    {
+                        try{
+                            
+                            layers.get(l-1).searchById(newId).sub_nodes.add(node);
+                            //System.out.println(node.id+" : "+newId+" : "+l);
+                        }
+                        catch(NullPointerException e){}
+                    }
+                }
+                
+            }
+        }
+        begin.extractNodes();
+    }
+    
+    @Override
+    public void playTurn(int p,int turn){
+        t = turn;
+        if(turn != 1)
+        {
+            current = layers.get(turn-2).searchByState(TicTacToe.state);
+        }
+        if(turn == 1)
+        {
+            current = begin;
+        }
+        if(p==1)current.playNextn();
+        if(p==2)current.playNext2();
+    }
+    
+    @Override
+    void notifyWin(int pl){
+        if(pl==1)current.pref+=10;
+        if(pl==2)current.pref-=10;
+        current.nodeType=1;
+        //System.out.println("*******"+current.id+":"+current.pref+" : "+layers.get(current.lNum-1).searchById(current.id).pref);
+        saveMind();
+    }
+    @Override
+    void notifyLose(int pl){
+        if(pl==1)current.pref-=10;
+        if(pl==2)current.pref+=10;
+        current.nodeType=1;
+        //System.out.println("*******"+current.id+":"+current.pref+" : "+layers.get(current.lNum-1).searchById(current.id).pref);
+        saveMind();
+    }import java.util.ArrayList;
+
+public class Node {
+    ArrayList<Node> sub_nodes = new ArrayList<Node>();
+    String subNodes="";
+    String id="";
+    int pref = 0;
+    int n=0;
+    int lNum;
+    Computer comp;
+    int nodeType=0;
+    public Node(String i,int l,Computer c){
+        id=i;
+        lNum = l;
+        comp = c;
+    }
+    
+    public void setAsState(){
+        for(int i=0;i<id.length();i++)
+        {
+            int val = (int)(id.charAt(i)-'0');
+            int t = i/3;
+            TicTacToe.state[t][i-(t*3)] = val;
+            
+        }
+    }
+    
+    public void playNext1(){
+        ArrayList<Node> temp = new ArrayList<Node>();
+        //System.out.println(id+" : "+sub_nodes.size());
+        long max = sub_nodes.get(0).pref;
+            for(int i=0;i<sub_nodes.size();i++)
+            {
+                if(sub_nodes.get(i).pref > max)
+                {
+                    temp.clear();
+                    temp.add(sub_nodes.get(i));
+                    max = sub_nodes.get(i).pref;
+                }
+                else if(sub_nodes.get(i).pref == max)
+                {
+                    temp.add(sub_nodes.get(i));
+                }
+            }
+        
+        int choice = (int) (Math.random()*temp.size());
+        temp.get(choice).n++;
+        temp.get(choice).setAsState();
+    }
+    
+    public void playNext2(){
+        ArrayList<Node> temp = new ArrayList<Node>();
+        //System.out.println(id+" : "+sub_nodes.size());
+        long min = sub_nodes.get(0).pref;
+            for(int i=0;i<sub_nodes.size();i++)
+            {
+                if(sub_nodes.get(i).pref < min)
+                {
+                    temp.clear();
+                    temp.add(sub_nodes.get(i));
+                    min = sub_nodes.get(i).pref;
+                }
+                else if(sub_nodes.get(i).pref == min)
+                {
+                    temp.add(sub_nodes.get(i));
+                }
+            }
+        
+        int choice = (int) (Math.random()*temp.size());
+        temp.get(choice).n++;
+        temp.get(choice).setAsState();
+    }
+    
+    public void playNextn(){
+        ArrayList<Node> temp = new ArrayList<Node>();
+        //System.out.println(id+" : "+sub_nodes.size());
+        int choice = 0;
+        long min = sub_nodes.get(0).n;
+            for(int i=0;i<sub_nodes.size();i++)
+            {
+                if(sub_nodes.get(i).n < min)
+                {
+                    min = sub_nodes.get(i).n;
+                    choice = i;
+                }
+            }
+        
+        sub_nodes.get(choice).n++;
+        sub_nodes.get(choice).setAsState();
+    }
+    
+    public void extractNodes(){
+        if(lNum!=9)
+        {
+            int l = subNodes.length();
+            String w="";
+            for(int i=0;i<l;i++)
+            {
+                char ch = subNodes.charAt(i);
+                if(ch!=',')
+                {
+                    w+=ch;
+                    
+                }
+                else
+                {
+                    sub_nodes.add(comp.layers.get(lNum).searchById(w));
+                    w="";
+                }
+            }
+        }
+        
+    }
+} import java.util.ArrayList;
+
+public class Layer {
+    ArrayList<Node> nodes = new ArrayList<Node>();
+    int layerNum = 0;
+    public Layer(int Num){
+        layerNum = Num;
+    }
+    
+    public void refreshLayer(){
+        for(int i=0;i<nodes.size();i++)
+        {
+            Node temp = nodes.get(i);
+            if(temp.nodeType!=0)continue;
+            temp.pref=0;
+            for(int j=0;j<temp.sub_nodes.size();j++)
+            {
+                temp.pref += (int)(temp.sub_nodes.get(j).pref)/2;
+            }
+            //System.out.print(temp.pref!=0?temp.pref+"\n":"");
+        }
+    }
+    
+    public Node searchByState(int[][] state){
+        
+        String temp = ""+state[0][0]+state[0][1]+state[0][2]+state[1][0]+state[1][1]+state[1][2]+state[2][0]+state[2][1]+state[2][2];
+        //System.out.print(temp.!=0?temp:"");
+        Node ret = searchById(temp);
+        return ret;
+    }
+    
+    public Node searchById(String id){
+        Node ret = null;
+        
+        for(int i=0;i<nodes.size();i++)
+        {
+            //System.out.println("*********"+nodes.get(i).id);
+            if(nodes.get(i).id.equals(id))
+            {
+                ret = nodes.get(i);
+                break;
+            }
+        }
+            
+        return ret;
+    }
+}
+    
+} 
